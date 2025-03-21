@@ -67,66 +67,62 @@ def show():
                 st.markdown("<hr>", unsafe_allow_html=True)
     
     with tab2:
-        # Form for adding a new bill
-        st.subheader("Add New Bill")
-        
-        # Bill details
-        title = st.text_input("Bill Title", key="bill_title")
-        amount = st.number_input("Amount", min_value=0.01, value=0.01, step=0.01, key="bill_amount")
-        due_date = st.date_input("Due Date", datetime.now().date(), key="bill_due_date")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            category_id = st.selectbox(
-                "Category",
-                options=[category["id"] for category in categories.values()],
-                format_func=lambda x: categories[x]["name"],
-                key="bill_category"
-            )
-        
-        with col2:
-            merchant = st.text_input("Merchant/Company", key="bill_merchant")
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            recurring = st.checkbox("Recurring Bill", True, key="bill_recurring")
-        
-        with col2:
-            auto_pay = st.checkbox("Auto-Pay Enabled", False, key="bill_autopay")
-        
-        description = st.text_area("Description", key="bill_description")
-        
-        # Submit button
-        if st.button("Add Bill", key="add_bill_btn"):
-            if not title:
-                st.error("Please enter a bill title.")
+    # Simple approach to add a bill without using st.form
+    st.subheader("Add New Bill")
+    
+    # Bill details
+    title = st.text_input("Bill Title", key="bill_title")
+    amount = st.number_input("Amount", min_value=0.01, value=0.01, step=0.01, key="bill_amount")
+    due_date = st.date_input("Due Date", datetime.now().date(), key="bill_due_date")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        category_id = st.selectbox(
+            "Category",
+            options=[category["id"] for category in categories.values()],
+            format_func=lambda x: categories[x]["name"],
+            key="bill_category"
+        )
+    
+    with col2:
+        merchant = st.text_input("Merchant/Company", key="bill_merchant")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        recurring = st.checkbox("Recurring Bill", True, key="bill_recurring")
+    
+    with col2:
+        auto_pay = st.checkbox("Auto-Pay Enabled", False, key="bill_autopay")
+    
+    description = st.text_area("Description", key="bill_description")
+    
+    # Submit button
+    if st.button("Add Bill", key="add_bill_btn"):
+        if not title:
+            st.error("Please enter a bill title.")
+        else:
+            # Debug info
+            st.write("Submitting bill data...")
+            
+            # Create bill object
+            new_bill = {
+                "title": title,
+                "amount": float(amount),
+                "dueDate": due_date.strftime("%Y-%m-%d"),
+                "categoryId": category_id,
+                "userId": user_id,
+                "paid": False,
+                "recurring": recurring,
+                "description": description,
+                "merchantName": merchant,
+                "autoPay": auto_pay,
+                "detectedFromSms": False
+            }
+            
+            # Add to storage
+            bill = storage.create_bill(new_bill)
+            
+            if bill:
+                st.success(f"Added new bill: {title}")
             else:
-                # Create bill object
-                new_bill = {
-                    "title": title,
-                    "amount": float(amount),
-                    "dueDate": due_date.strftime("%Y-%m-%d"),
-                    "categoryId": category_id,
-                    "userId": user_id,
-                    "paid": False,
-                    "recurring": recurring,
-                    "description": description,
-                    "merchantName": merchant,
-                    "autoPay": auto_pay,
-                    "detectedFromSms": False
-                }
-                
-                # Debug output
-                st.write("Creating bill with data:", new_bill)
-                
-                # Add to storage
-                bill = storage.create_bill(new_bill)
-                
-                # Debug output
-                st.write("Created bill:", bill)
-                
-                if bill:
-                    st.success(f"Added new bill: {title}")
-                    # Don't use rerun, just show the success message
-                else:
-                    st.error("Failed to add bill.")
+                st.error("Failed to add bill.")
