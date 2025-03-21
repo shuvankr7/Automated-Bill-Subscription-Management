@@ -1,48 +1,51 @@
 import datetime
-import uuid
+import streamlit as st
 from datetime import timedelta
 import pandas as pd
-def get_storage():
-    """Get or create the storage instance in session state"""
-    if 'storage' not in st.session_state:
-        st.session_state.storage = MemStorage()
-    return st.session_state.storage
+
+# Create a global singleton storage instance
+if 'bills' not in st.session_state:
+    st.session_state.bills = {}
+    st.session_state.subscriptions = {}
+    st.session_state.categories = {}
+    st.session_state.users = {}
+    st.session_state.reminders = {}
+    st.session_state.sms_messages = {}
+    st.session_state.suggestions = {}
+    st.session_state.bill_counter = 0
+    st.session_state.subscription_counter = 0
+    st.session_state.initialized = False
+
 class MemStorage:
     """In-memory storage for bills, subscriptions, and other data."""
     
     def __init__(self):
         """Initialize the storage with empty collections."""
-        self.users = {}
-        self.bills = {}
-        self.subscriptions = {}
-        self.categories = {}
-        self.reminders = {}
-        self.sms_messages = {}
-        self.suggestions = {}
-        
-        # Initialize default categories
-        self.initialize_default_categories()
-        
-        # Add default user
-        self.users[1] = {
-            "id": 1,
-            "username": "demo",
-            "email": "demo@example.com",
-            "name": "Demo User",
-            "createdAt": datetime.datetime.now(),
-            "settings": {
-                "notifications": {
-                    "email": True,
-                    "push": False,
-                    "sms": False
-                },
-                "theme": "light",
-                "currency": "USD"
+        # Initialize if not already done
+        if not st.session_state.initialized:
+            self.initialize_default_categories()
+            
+            # Add default user
+            st.session_state.users[1] = {
+                "id": 1,
+                "username": "demo",
+                "email": "demo@example.com",
+                "name": "Demo User",
+                "createdAt": datetime.datetime.now(),
+                "settings": {
+                    "notifications": {
+                        "email": True,
+                        "push": False,
+                        "sms": False
+                    },
+                    "theme": "light",
+                    "currency": "USD"
+                }
             }
-        }
-        
-        # Initialize demo data
-        self.initialize_demo_data()
+            
+            # Initialize demo data
+            self.initialize_demo_data()
+            st.session_state.initialized = True
     
     def initialize_default_categories(self):
         """Initialize default bill categories."""
@@ -60,7 +63,7 @@ class MemStorage:
         ]
         
         for category in categories:
-            self.categories[category["id"]] = category
+            st.session_state.categories[category["id"]] = category
     
     def initialize_demo_data(self):
         """Initialize demo data for the application."""
@@ -114,7 +117,9 @@ class MemStorage:
         ]
         
         for bill in bills:
-            self.bills[bill["id"]] = bill
+            st.session_state.bills[bill["id"]] = bill
+        
+        st.session_state.bill_counter = 3
         
         # Demo subscriptions
         subscriptions = [
@@ -166,7 +171,9 @@ class MemStorage:
         ]
         
         for subscription in subscriptions:
-            self.subscriptions[subscription["id"]] = subscription
+            st.session_state.subscriptions[subscription["id"]] = subscription
+        
+        st.session_state.subscription_counter = 3
         
         # Demo suggestions
         suggestions = [
@@ -199,7 +206,7 @@ class MemStorage:
         ]
         
         for suggestion in suggestions:
-            self.suggestions[suggestion["id"]] = suggestion
+            st.session_state.suggestions[suggestion["id"]] = suggestion
         
         # Demo reminders
         reminders = [
@@ -218,19 +225,19 @@ class MemStorage:
         ]
         
         for reminder in reminders:
-            self.reminders[reminder["id"]] = reminder
+            st.session_state.reminders[reminder["id"]] = reminder
     
     def get_user(self, user_id):
         """Get a user by ID."""
-        return self.users.get(user_id)
+        return st.session_state.users.get(user_id)
     
     def get_bills(self, user_id):
         """Get all bills for a user."""
-        return [bill for bill in self.bills.values() if bill["userId"] == user_id]
+        return [bill for bill in st.session_state.bills.values() if bill["userId"] == user_id]
     
     def get_bill(self, bill_id):
         """Get a bill by ID."""
-        return self.bills.get(bill_id)
+        return st.session_state.bills.get(bill_id)
     
     def get_upcoming_bills(self, user_id, days=7):
         """Get upcoming bills for a user within the specified days."""
@@ -247,11 +254,23 @@ class MemStorage:
     
     def create_bill(self, bill_data):
         """Create a new bill."""
-        bill_id = max(self.bills.keys() or [0]) + 1
+        # Debug
+        st.write(f"Creating bill with data in storage: {bill_data}")
+        
+        st.session_state.bill_counter += 1
+        bill_id = st.session_state.bill_counter
         bill_data["id"] = bill_id
         bill_data["createdAt"] = datetime.datetime.now()
         
-        self.bills[bill_id] = bill_data
+        # Debug
+        st.write(f"Assigned bill ID: {bill_id}")
+        
+        # Store in session state
+        st.session_state.bills[bill_id] = bill_data
+        
+        # Debug
+        st.write(f"Current bills in storage: {list(st.session_state.bills.keys())}")
+        
         return bill_data
     
     def update_bill(self, bill_id, updates):
@@ -264,18 +283,18 @@ class MemStorage:
     
     def delete_bill(self, bill_id):
         """Delete a bill."""
-        if bill_id in self.bills:
-            del self.bills[bill_id]
+        if bill_id in st.session_state.bills:
+            del st.session_state.bills[bill_id]
             return True
         return False
     
     def get_subscriptions(self, user_id):
         """Get all subscriptions for a user."""
-        return [sub for sub in self.subscriptions.values() if sub["userId"] == user_id]
+        return [sub for sub in st.session_state.subscriptions.values() if sub["userId"] == user_id]
     
     def get_subscription(self, sub_id):
         """Get a subscription by ID."""
-        return self.subscriptions.get(sub_id)
+        return st.session_state.subscriptions.get(sub_id)
     
     def get_active_subscriptions(self, user_id):
         """Get active subscriptions for a user."""
@@ -283,11 +302,23 @@ class MemStorage:
     
     def create_subscription(self, sub_data):
         """Create a new subscription."""
-        sub_id = max(self.subscriptions.keys() or [0]) + 1
+        # Debug
+        st.write(f"Creating subscription with data in storage: {sub_data}")
+        
+        st.session_state.subscription_counter += 1
+        sub_id = st.session_state.subscription_counter
         sub_data["id"] = sub_id
         sub_data["createdAt"] = datetime.datetime.now()
         
-        self.subscriptions[sub_id] = sub_data
+        # Debug
+        st.write(f"Assigned subscription ID: {sub_id}")
+        
+        # Store in session state
+        st.session_state.subscriptions[sub_id] = sub_data
+        
+        # Debug
+        st.write(f"Current subscriptions in storage: {list(st.session_state.subscriptions.keys())}")
+        
         return sub_data
     
     def update_subscription(self, sub_id, updates):
@@ -300,22 +331,22 @@ class MemStorage:
     
     def delete_subscription(self, sub_id):
         """Delete a subscription."""
-        if sub_id in self.subscriptions:
-            del self.subscriptions[sub_id]
+        if sub_id in st.session_state.subscriptions:
+            del st.session_state.subscriptions[sub_id]
             return True
         return False
     
     def get_categories(self):
         """Get all categories."""
-        return list(self.categories.values())
+        return list(st.session_state.categories.values())
     
     def get_category(self, category_id):
         """Get a category by ID."""
-        return self.categories.get(category_id)
+        return st.session_state.categories.get(category_id)
     
     def get_reminders(self, user_id):
         """Get all reminders for a user."""
-        return [reminder for reminder in self.reminders.values() if reminder["userId"] == user_id]
+        return [reminder for reminder in st.session_state.reminders.values() if reminder["userId"] == user_id]
     
     def get_pending_reminders(self, user_id):
         """Get pending reminders for a user."""
@@ -325,20 +356,20 @@ class MemStorage:
     
     def get_sms_messages(self, user_id):
         """Get all SMS messages for a user."""
-        return [sms for sms in self.sms_messages.values() if sms["userId"] == user_id]
+        return [sms for sms in st.session_state.sms_messages.values() if sms["userId"] == user_id]
     
     def create_sms_message(self, sms_data):
         """Create a new SMS message."""
-        sms_id = max(self.sms_messages.keys() or [0]) + 1
+        sms_id = max(list(st.session_state.sms_messages.keys()) or [0]) + 1
         sms_data["id"] = sms_id
         sms_data["createdAt"] = datetime.datetime.now()
         
-        self.sms_messages[sms_id] = sms_data
+        st.session_state.sms_messages[sms_id] = sms_data
         return sms_data
     
     def update_sms_message(self, sms_id, updates):
         """Update an SMS message."""
-        sms = self.sms_messages.get(sms_id)
+        sms = st.session_state.sms_messages.get(sms_id)
         if sms:
             sms.update(updates)
             return sms
@@ -346,7 +377,7 @@ class MemStorage:
     
     def get_suggestions(self, user_id):
         """Get all suggestions for a user."""
-        return [suggestion for suggestion in self.suggestions.values() if suggestion["userId"] == user_id]
+        return [suggestion for suggestion in st.session_state.suggestions.values() if suggestion["userId"] == user_id]
     
     def get_active_suggestions(self, user_id):
         """Get active suggestions for a user."""
@@ -354,16 +385,16 @@ class MemStorage:
     
     def create_suggestion(self, suggestion_data):
         """Create a new suggestion."""
-        suggestion_id = max(self.suggestions.keys() or [0]) + 1
+        suggestion_id = max(list(st.session_state.suggestions.keys()) or [0]) + 1
         suggestion_data["id"] = suggestion_id
         suggestion_data["createdAt"] = datetime.datetime.now()
         
-        self.suggestions[suggestion_id] = suggestion_data
+        st.session_state.suggestions[suggestion_id] = suggestion_data
         return suggestion_data
     
     def update_suggestion(self, suggestion_id, updates):
         """Update a suggestion."""
-        suggestion = self.suggestions.get(suggestion_id)
+        suggestion = st.session_state.suggestions.get(suggestion_id)
         if suggestion:
             suggestion.update(updates)
             return suggestion
@@ -371,8 +402,8 @@ class MemStorage:
     
     def delete_suggestion(self, suggestion_id):
         """Delete a suggestion."""
-        if suggestion_id in self.suggestions:
-            del self.suggestions[suggestion_id]
+        if suggestion_id in st.session_state.suggestions:
+            del st.session_state.suggestions[suggestion_id]
             return True
         return False
     
@@ -525,7 +556,7 @@ class MemStorage:
                 elif sub["frequency"] == "quarterly":
                     monthly_amount = sub["amount"] / 3
                 elif sub["frequency"] == "weekly":
-                    monthly_amount = sub["amount"] * 4.33
+                    monthly_amount = sub["amount"] * 4.33  # Average weeks per month
                 
                 if sub["categoryId"] == 2:  # Utilities
                     utilities += monthly_amount
@@ -556,3 +587,6 @@ class MemStorage:
             })
         
         return forecast
+
+# Create a global storage instance
+storage = MemStorage()
