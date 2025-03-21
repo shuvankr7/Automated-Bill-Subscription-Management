@@ -8,9 +8,7 @@ from models.storage import MemStorage
 from utils.date_utils import format_currency
 
 def show():
-    """Display the analytics page."""
-    # Initialize storage
-   storage = get_storage()
+    storage = get_storage()
 
     
     # Get user ID (in a real app, this would come from authentication)
