@@ -147,7 +147,7 @@ def show():
                         # Update bill
                         storage.update_bill(row['ID'], {"paid": True})
                         st.success(f"Marked {row['Title']} as paid.")
-                        st.experimental_rerun()
+                        st.rerun()
                 else:
                     col5.write("✓ Paid")
                 
@@ -166,12 +166,12 @@ def show():
                     col1, col2 = st.columns(2)
                     if col1.button("Edit", key=f"edit_bill_{row['ID']}"):
                         st.session_state.bill_to_edit = bill
-                        st.experimental_rerun()
+                        st.rerun()
                     
                     if col2.button("Delete", key=f"delete_bill_{row['ID']}"):
                         if storage.delete_bill(row['ID']):
                             st.success(f"Deleted {row['Title']}.")
-                            st.experimental_rerun()
+                            st.rerun()
                         else:
                             st.error("Failed to delete bill.")
                 
@@ -234,6 +234,6 @@ def show():
                     
                     if bill:
                         st.success(f"Added new bill: {title}")
-                        st.experimental_rerun()
+                        st.rerun()
                     else:
                         st.error("Failed to add bill.")
