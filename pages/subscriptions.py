@@ -135,13 +135,13 @@ def show():
                         # Update subscription
                         storage.update_subscription(row['ID'], {"active": False})
                         st.success(f"Deactivated {row['Title']}.")
-                        st.experimental_rerun()
+                        st.rerun()
                 else:
                     if col5.button("Activate", key=f"activate_sub_{row['ID']}"):
                         # Update subscription
                         storage.update_subscription(row['ID'], {"active": True})
                         st.success(f"Activated {row['Title']}.")
-                        st.experimental_rerun()
+                        st.rerun()
                 
                 # Add expander with details
                 with st.expander("Details", expanded=False):
@@ -160,12 +160,12 @@ def show():
                     col1, col2 = st.columns(2)
                     if col1.button("Edit", key=f"edit_sub_{row['ID']}"):
                         st.session_state.sub_to_edit = sub
-                        st.experimental_rerun()
+                        st.rerun()
                     
                     if col2.button("Delete", key=f"delete_sub_{row['ID']}"):
                         if storage.delete_subscription(row['ID']):
                             st.success(f"Deleted {row['Title']}.")
-                            st.experimental_rerun()
+                            st.rerun()
                         else:
                             st.error("Failed to delete subscription.")
                 
@@ -237,6 +237,6 @@ def show():
                     
                     if sub:
                         st.success(f"Added new subscription: {title}")
-                        st.experimental_rerun()
+                        st.rerun()
                     else:
                         st.error("Failed to add subscription.")
