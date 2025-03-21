@@ -10,7 +10,8 @@ from utils.date_utils import format_currency
 def show():
     """Display the analytics page."""
     # Initialize storage
-    storage = MemStorage()
+   storage = get_storage()
+
     
     # Get user ID (in a real app, this would come from authentication)
     user_id = 1
@@ -194,7 +195,8 @@ def show_category_breakdown(bills, subscriptions):
     st.subheader("Spending by Category")
     
     # Initialize storage to get categories
-    storage = MemStorage()
+    storage = get_storage()
+
     categories = {cat["id"]: cat for cat in storage.get_categories()}
     
     # Prepare category data
@@ -303,7 +305,8 @@ def show_forecast(user_id):
     st.subheader("Bill Forecast")
     
     # Initialize storage
-    storage = MemStorage()
+    storage = get_storage()
+
     
     # Get forecast data
     forecast_data = storage.get_forecast_data(user_id, 3)
