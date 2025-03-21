@@ -6,7 +6,8 @@ from models.storage import MemStorage
 def show():
     """Display the settings page."""
     # Initialize storage
-    storage = MemStorage()
+    storage = get_storage()
+
     
     # Get user ID (in a real app, this would come from authentication)
     user_id = 1
