@@ -230,8 +230,21 @@ def show():
                     }
                     
                     # Add to storage
+                    st.write("Form data:", {
+             "title": title,
+    "amount": amount,
+    "dueDate": due_date.strftime("%Y-%m-%d"),
+    "categoryId": category_id,
+    "userId": user_id,
+    "paid": False,
+    "recurring": recurring,
+    "description": description,
+    "merchantName": merchant,
+    "autoPay": auto_pay,
+    "detectedFromSms": False
+})
                     bill = storage.create_bill(new_bill)
-                    
+                    st.write("Created bill:", bill)
                     if bill:
                         st.success(f"Added new bill: {title}")
                         st.rerun()
