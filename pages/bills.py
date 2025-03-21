@@ -4,7 +4,10 @@ from datetime import datetime
 
 from models.storage import MemStorage
 from utils.date_utils import format_date, format_currency, get_due_date_status
-
+# Clear form fields if previously submitted
+if 'form_submitted' in st.session_state and st.session_state.form_submitted:
+    st.session_state.form_submitted = False
+    # Reset form fields as needed
 def show():
     """Display the bills page."""
     # Initialize storage
@@ -212,6 +215,7 @@ def show():
             submit = st.form_submit_button("Add Bill")
             
             if submit:
+                st.write("Form submitted!")
                 if not title:
                     st.error("Please enter a bill title.")
                 else:
@@ -248,6 +252,6 @@ def show():
                     st.write("Created bill:", bill)
                     if bill:
                         st.success(f"Added new bill: {title}")
-                        st.rerun()
+                        st.session_state.form_submitted = True
                     else:
                         st.error("Failed to add bill.")
