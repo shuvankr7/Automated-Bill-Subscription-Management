@@ -23,58 +23,58 @@ st.set_page_config(
 if 'bills' not in st.session_state:
     st.session_state.bills = []
     # Sample bills for demonstration
-    st.session_state.bills = [
-        {
-            "id": 1,
-            "title": "Rent",
-            "amount": 1200.00,
-            "due_date": (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d"),
-            "category": "Housing",
-            "paid": False,
-            "recurring": True,
-            "description": "Monthly apartment rent",
-            "merchant": "ABC Properties"
-        },
-        {
-            "id": 2,
-            "title": "Electricity Bill",
-            "amount": 87.50,
-            "due_date": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%d"),
-            "category": "Utilities",
-            "paid": False,
-            "recurring": True,
-            "description": "Monthly electricity utility bill",
-            "merchant": "Power Company"
-        }
-    ]
+    # st.session_state.bills = [
+    #     {
+    #         "id": 1,
+    #         "title": "Rent",
+    #         "amount": 1200.00,
+    #         "due_date": (datetime.now() + timedelta(days=5)).strftime("%Y-%m-%d"),
+    #         "category": "Housing",
+    #         "paid": False,
+    #         "recurring": True,
+    #         "description": "Monthly apartment rent",
+    #         "merchant": "ABC Properties"
+    #     },
+    #     {
+    #         "id": 2,
+    #         "title": "Electricity Bill",
+    #         "amount": 87.50,
+    #         "due_date": (datetime.now() + timedelta(days=10)).strftime("%Y-%m-%d"),
+    #         "category": "Utilities",
+    #         "paid": False,
+    #         "recurring": True,
+    #         "description": "Monthly electricity utility bill",
+    #         "merchant": "Power Company"
+    #     }
+    # ]
 
 if 'subscriptions' not in st.session_state:
     st.session_state.subscriptions = []
     # Sample subscriptions for demonstration
-    st.session_state.subscriptions = [
-        {
-            "id": 1,
-            "title": "Netflix",
-            "amount": 15.99,
-            "renewal_date": (datetime.now() + timedelta(days=12)).strftime("%Y-%m-%d"),
-            "frequency": "monthly",
-            "category": "Entertainment",
-            "active": True,
-            "description": "Standard HD streaming plan",
-            "merchant": "Netflix"
-        },
-        {
-            "id": 2,
-            "title": "Spotify",
-            "amount": 9.99,
-            "renewal_date": (datetime.now() + timedelta(days=20)).strftime("%Y-%m-%d"),
-            "frequency": "monthly",
-            "category": "Entertainment",
-            "active": True,
-            "description": "Premium music subscription",
-            "merchant": "Spotify"
-        }
-    ]
+    # st.session_state.subscriptions = [
+    #     {
+    #         "id": 1,
+    #         "title": "Netflix",
+    #         "amount": 15.99,
+    #         "renewal_date": (datetime.now() + timedelta(days=12)).strftime("%Y-%m-%d"),
+    #         "frequency": "monthly",
+    #         "category": "Entertainment",
+    #         "active": True,
+    #         "description": "Standard HD streaming plan",
+    #         "merchant": "Netflix"
+    #     },
+    #     {
+    #         "id": 2,
+    #         "title": "Spotify",
+    #         "amount": 9.99,
+    #         "renewal_date": (datetime.now() + timedelta(days=20)).strftime("%Y-%m-%d"),
+    #         "frequency": "monthly",
+    #         "category": "Entertainment",
+    #         "active": True,
+    #         "description": "Premium music subscription",
+    #         "merchant": "Spotify"
+    #     }
+    # ]
 
 if 'bill_counter' not in st.session_state:
     st.session_state.bill_counter = 2
