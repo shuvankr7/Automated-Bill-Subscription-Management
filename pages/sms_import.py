@@ -9,7 +9,8 @@ from utils.date_utils import format_currency, format_date
 def show():
     """Display the SMS import page."""
     # Initialize storage and AI service
-    storage = MemStorage()
+    storage = get_storage()
+
     groq_service = GroqService()
     
     # Get user ID (in a real app, this would come from authentication)
