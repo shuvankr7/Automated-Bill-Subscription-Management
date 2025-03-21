@@ -132,7 +132,7 @@ def show():
                             if st.button("View Full Bill Details", key=f"view_bill_{sms['id']}"):
                                 st.session_state.selected_page = "Bills"
                                 st.session_state.selected_bill = bill["id"]
-                                st.experimental_rerun()
+                                st.rerun()
                     else:
                         st.markdown("**Status:** No bill information detected")
                         
@@ -156,7 +156,7 @@ def show():
                                         })
                                         
                                         st.success("Successfully detected bill information!")
-                                        st.experimental_rerun()
+                                        st.rerun()
                                     else:
                                         st.error("Failed to create bill record.")
                                 else:
