@@ -1,1 +1,1 @@
-from .storage import MemStorage, storage
+from .storage import storage, storage.MemStorage
