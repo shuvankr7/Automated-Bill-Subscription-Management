@@ -75,6 +75,10 @@ if 'sub_counter' not in st.session_state:
 if 'page' not in st.session_state:
     st.session_state.page = "Dashboard"
 
+# Add a flag for form submission
+if 'form_submitted' not in st.session_state:
+    st.session_state.form_submitted = False
+
 # CSS styling
 st.markdown("""
 <style>
@@ -275,33 +279,45 @@ elif st.session_state.page == "Bills":
                 st.markdown("<hr>", unsafe_allow_html=True)
     
     with tab2:
-        # Form for adding a new bill
+        # Check if form was just submitted
+        form_was_submitted = st.session_state.form_submitted
+        
+        # Reset the flag for next cycle
+        if form_was_submitted:
+            st.session_state.form_submitted = False
+        
+        # Add New Bill Form
         st.subheader("Add New Bill")
         
+        # Use empty values if form was just submitted
+        title_val = "" if form_was_submitted else None
+        merchant_val = "" if form_was_submitted else None
+        description_val = "" if form_was_submitted else None
+        
         # Bill details
-        title = st.text_input("Bill Title", key="new_bill_title")
-        amount = st.number_input("Amount", min_value=0.01, value=0.01, step=0.01, key="new_bill_amount")
-        due_date = st.date_input("Due Date", datetime.now().date(), key="new_bill_date")
+        title = st.text_input("Bill Title", value=title_val, key="bill_title")
+        amount = st.number_input("Amount", min_value=0.01, value=0.01, step=0.01, key="bill_amount")
+        due_date = st.date_input("Due Date", datetime.now().date(), key="bill_due_date")
         
         col1, col2 = st.columns(2)
         with col1:
             category = st.selectbox(
                 "Category",
                 ["Housing", "Utilities", "Transportation", "Entertainment", "Insurance", "Other"],
-                key="new_bill_category"
+                key="bill_category"
             )
         
         with col2:
-            merchant = st.text_input("Merchant/Company", key="new_bill_merchant")
+            merchant = st.text_input("Merchant/Company", value=merchant_val, key="bill_merchant")
         
         col1, col2 = st.columns(2)
         with col1:
-            recurring = st.checkbox("Recurring Bill", True, key="new_bill_recurring")
+            recurring = st.checkbox("Recurring Bill", True, key="bill_recurring")
         
         with col2:
-            auto_pay = st.checkbox("Auto-Pay Enabled", False, key="new_bill_autopay")
+            auto_pay = st.checkbox("Auto-Pay Enabled", False, key="bill_autopay")
         
-        description = st.text_area("Description", key="new_bill_desc")
+        description = st.text_area("Description", value=description_val, key="bill_description")
         
         # Submit button
         if st.button("Add Bill", key="add_bill_btn"):
@@ -327,13 +343,9 @@ elif st.session_state.page == "Bills":
                 st.session_state.bills.append(new_bill)
                 st.success(f"Added new bill: {title}")
                 
-                # Clear form fields
-                st.session_state["new_bill_title"] = ""
-                st.session_state["new_bill_amount"] = 0.01
-                st.session_state["new_bill_merchant"] = ""
-                st.session_state["new_bill_desc"] = ""
-                
-                # No rerun needed here - let the success message show
+                # Set the submission flag to trigger form reset on next rerun
+                st.session_state.form_submitted = True
+                st.rerun()
 
 elif st.session_state.page == "Subscriptions":
     st.markdown('<h1 class="main-header">Subscriptions</h1>', unsafe_allow_html=True)
@@ -418,43 +430,55 @@ elif st.session_state.page == "Subscriptions":
                 st.markdown("<hr>", unsafe_allow_html=True)
     
     with tab2:
+        # Check if form was just submitted
+        form_was_submitted = st.session_state.form_submitted
+        
+        # Reset the flag for next cycle
+        if form_was_submitted:
+            st.session_state.form_submitted = False
+            
         # Form for adding a new subscription
         st.subheader("Add New Subscription")
         
+        # Use empty values if form was just submitted
+        title_val = "" if form_was_submitted else None
+        merchant_val = "" if form_was_submitted else None
+        description_val = "" if form_was_submitted else None
+        
         # Subscription details
-        title = st.text_input("Subscription Name", key="new_sub_title")
-        amount = st.number_input("Amount", min_value=0.01, value=9.99, step=0.01, key="new_sub_amount")
+        title = st.text_input("Subscription Name", value=title_val, key="sub_title")
+        amount = st.number_input("Amount", min_value=0.01, value=9.99, step=0.01, key="sub_amount")
         
         col1, col2 = st.columns(2)
         with col1:
             frequency = st.selectbox(
                 "Billing Frequency",
                 ["monthly", "yearly", "quarterly", "weekly", "biweekly"],
-                key="new_sub_freq"
+                key="sub_freq"
             )
         
         with col2:
-            renewal_date = st.date_input("Next Renewal Date", datetime.now().date(), key="new_sub_date")
+            renewal_date = st.date_input("Next Renewal Date", datetime.now().date(), key="sub_date")
         
         col1, col2 = st.columns(2)
         with col1:
             category = st.selectbox(
                 "Category",
                 ["Entertainment", "Utilities", "Digital Services", "Health", "Other"],
-                key="new_sub_category"
+                key="sub_category"
             )
         
         with col2:
-            merchant = st.text_input("Service Provider", key="new_sub_merchant")
+            merchant = st.text_input("Service Provider", value=merchant_val, key="sub_merchant")
         
         col1, col2 = st.columns(2)
         with col1:
-            active = st.checkbox("Active", True, key="new_sub_active")
+            active = st.checkbox("Active", True, key="sub_active")
         
         with col2:
-            auto_renewal = st.checkbox("Auto-Renewal Enabled", True, key="new_sub_auto")
+            auto_renewal = st.checkbox("Auto-Renewal Enabled", True, key="sub_auto")
         
-        description = st.text_area("Description", key="new_sub_desc")
+        description = st.text_area("Description", value=description_val, key="sub_description")
         
         # Submit button
         if st.button("Add Subscription", key="add_sub_btn"):
@@ -480,13 +504,9 @@ elif st.session_state.page == "Subscriptions":
                 st.session_state.subscriptions.append(new_sub)
                 st.success(f"Added new subscription: {title}")
                 
-                # Clear form fields
-                st.session_state["new_sub_title"] = ""
-                st.session_state["new_sub_amount"] = 9.99
-                st.session_state["new_sub_merchant"] = ""
-                st.session_state["new_sub_desc"] = ""
-                
-                # No rerun needed here - let the success message show
+                # Set the submission flag to trigger form reset on next rerun
+                st.session_state.form_submitted = True
+                st.rerun()
 
 # Debug information (only visible during development)
 # Uncomment this section for debugging
