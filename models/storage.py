@@ -2,7 +2,11 @@ import datetime
 import uuid
 from datetime import timedelta
 import pandas as pd
-
+def get_storage():
+    """Get or create the storage instance in session state"""
+    if 'storage' not in st.session_state:
+        st.session_state.storage = MemStorage()
+    return st.session_state.storage
 class MemStorage:
     """In-memory storage for bills, subscriptions, and other data."""
     
