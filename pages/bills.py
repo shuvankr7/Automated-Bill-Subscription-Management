@@ -8,7 +8,8 @@ from utils.date_utils import format_date, format_currency, get_due_date_status
 def show():
     """Display the bills page."""
     # Initialize storage
-    storage = MemStorage()
+   storage = get_storage()
+
     
     # Get user ID (in a real app, this would come from authentication)
     user_id = 1
